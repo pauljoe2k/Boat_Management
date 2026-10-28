@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Harbour Desk: MVP prototype</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{--bg:#f4f7fd;--sf:#fff;--ink:#26344b;--mu:#76849b;--ln:#e4eaf4;--pri:#cfdafb;--pt:#2b3f7a;--g:#d8f2e4;--gt:#1f6b47;--gd:#4cc38a;--r:#fbdddd;--rt:#9b2f35;--rd:#f07a80;--a:#fcebcb;--at:#8a5a10;--l:#e6ddf8;--lt:#54379a;--s:#d6ecf7;--st:#1d5f80;--sh:0 8px 24px rgba(60,80,130,.08);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1622;--sf:#16202f;--ink:#e8eef8;--mu:#93a2ba;--ln:#25324a;--pri:#2c3d6b;--pt:#d6e0ff;--g:#173a2b;--gt:#8fe3b8;--r:#43202a;--rt:#ffb3b8;--a:#44351a;--at:#f5cf85;--l:#35295a;--lt:#d3c2ff;--s:#173547;--st:#a6dcf5;--sh:0 8px 24px rgba(0,0,0,.3)}}
+:root[data-theme="dark"]{--bg:#0e1622;--sf:#16202f;--ink:#e8eef8;--mu:#93a2ba;--ln:#25324a;--pri:#2c3d6b;--pt:#d6e0ff;--g:#173a2b;--gt:#8fe3b8;--r:#43202a;--rt:#ffb3b8;--a:#44351a;--at:#f5cf85;--l:#35295a;--lt:#d3c2ff;--s:#173547;--st:#a6dcf5;--sh:0 8px 24px rgba(0,0,0,.3)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:400 14px/1.5 "Plus Jakarta Sans",system-ui,sans-serif}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--pt);outline-offset:2px}
+small,.mu{color:var(--mu);font-size:12px}
+#app{display:flex;min-height:100%}
+.side{width:236px;background:var(--sf);border-right:1px solid var(--ln);padding:24px 16px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;margin:0 6px 22px}
+.logo i{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,#b9c9fb,#e6ddf8);display:grid;place-items:center;font-style:normal}
+.nav{display:flex;align-items:center;gap:10px;padding:11px 14px;border:0;background:none;border-radius:12px;color:var(--mu);font-weight:600;cursor:pointer;text-align:left}
+.nav:hover{background:var(--bg)}.nav.on{background:var(--pri);color:var(--pt)}
+.nav b{margin-left:auto;background:var(--r);color:var(--rt);border-radius:99px;font-size:11px;padding:0 8px}
+.user{margin-top:auto;display:flex;gap:10px;align-items:center;padding:10px;border-radius:14px;background:var(--bg)}
+.av{width:34px;height:34px;border-radius:50%;background:var(--l);color:var(--lt);display:grid;place-items:center;font-weight:700}
+main{flex:1;padding:30px 36px 60px;max-width:1100px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:25px;line-height:1.2;font-weight:700}h2{font-size:16px}
+.btn{border:0;cursor:pointer;background:var(--pri);color:var(--pt);padding:10px 18px;border-radius:12px;font-weight:600;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--sh)}
+.btn.o{background:var(--sf);border:1px solid var(--ln);color:var(--ink)}
+.btn.g{background:var(--g);color:var(--gt)}.btn.sm{padding:6px 12px;font-size:12px;border-radius:10px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.st{border:0;text-align:left;cursor:pointer;border-radius:18px;padding:16px 18px;transition:transform .15s}
+.st:hover{transform:translateY(-2px)}.st b{display:block;font-size:30px;line-height:1.2}.st span{font-size:13px}
+.s1{background:var(--pri);color:var(--pt)}.s2{background:var(--g);color:var(--gt)}.s3{background:var(--r);color:var(--rt)}.s4{background:var(--a);color:var(--at)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.chip{border:1px solid var(--ln);background:var(--sf);border-radius:99px;padding:7px 15px;cursor:pointer;color:var(--mu);font-weight:600;font-size:13px}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input,select{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:10px 12px;width:100%}
+.bar input{flex:1;min-width:180px;width:auto}.bar select{width:auto}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:20px;box-shadow:var(--sh)}
+.row{display:grid;grid-template-columns:2.2fr 1.1fr 1.1fr 1.4fr 1.2fr;gap:10px;align-items:center;padding:13px 20px;border-bottom:1px solid var(--ln)}
+.row:last-child{border-bottom:0}.row.h{font-size:12px;color:var(--mu);cursor:default}
+.row .act{text-align:right}.late{color:var(--rt);font-weight:700}.soon{color:var(--at);font-weight:700}
+.lt{display:inline-block;width:12px;height:12px;border-radius:50%}
+.lt.g{background:var(--gd);box-shadow:0 0 0 4px var(--g)}.lt.r{background:var(--rd);box-shadow:0 0 0 4px var(--r)}
+.pill{display:inline-flex;align-items:center;gap:10px;padding:5px 13px 5px 9px;border-radius:99px;font-size:12px;font-weight:700}
+.pill.g{background:var(--g);color:var(--gt)}.pill.r{background:var(--r);color:var(--rt)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.bc{padding:18px;cursor:pointer;transition:transform .15s}.bc:hover{transform:translateY(-3px)}
+.ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:20px;margin-bottom:10px}
+.prog{height:8px;border-radius:9px;background:var(--r);overflow:hidden;margin:10px 0 6px}.prog i{display:block;height:100%;background:var(--gd)}
+.form{display:grid;gap:14px;max-width:520px;padding:24px}
+label{display:grid;gap:5px;font-weight:600;font-size:13px}
+.drop{border:2px dashed var(--pri);background:var(--bg);border-radius:16px;padding:22px;text-align:center;cursor:pointer;color:var(--pt);font-weight:600}
+.tl{display:flex;gap:14px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--ln)}.tl:last-child{border-bottom:0}
+.tg{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-weight:700;flex:none}
+.sw{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--ln);gap:12px}
+.sw:last-child{border-bottom:0}
+.tgl{appearance:none;width:44px;height:26px;border-radius:99px;background:var(--ln);position:relative;cursor:pointer;flex:none;padding:0;border:0}
+.tgl:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+.tgl:checked{background:var(--gd)}.tgl:checked:after{left:21px}
+.mask{position:fixed;inset:0;background:rgba(20,30,50,.45);display:grid;place-items:center;padding:16px;z-index:20}
+.modal{background:var(--sf);border-radius:22px;padding:24px;width:100%;max-width:420px;display:grid;gap:14px}
+.push{background:linear-gradient(160deg,#dce6fb,#e8defa 60%,#fde6e6);border-radius:26px;padding:26px 16px;color:#26344b}
+.push .n{background:rgba(255,255,255,.9);border-radius:18px;padding:14px;display:flex;gap:12px;margin-top:14px;text-align:left}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,40px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:99px;opacity:0;transition:.25s;z-index:30;font-weight:600}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.welcome{min-height:100vh;width:100%;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,var(--pri),var(--l) 55%,var(--r))}
+.wc{max-width:430px;width:100%;padding:32px;display:grid;gap:16px;text-align:center}
+.empty{text-align:center;padding:36px;color:var(--mu)}
+.tabs{display:none}
+@media(max-width:860px){.side{display:none}main{padding:20px 16px 100px}.stats{grid-template-columns:1fr 1fr}
+.tabs{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--ln);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:10;justify-content:space-around}
+.tabs .nav{flex-direction:column;gap:0;font-size:11px;padding:6px 8px}
+.row{grid-template-columns:1fr auto}.row.h{display:none}.row .x{grid-column:1/-1}.row .act{text-align:left}}
+</style></head><body>
+<div id="root"></div><div id="toast"></div>
+<script>
+var T=new Date();T.setHours(0,0,0,0);
+var D=function(n){return new Date(T.getTime()+n*864e5)};
+var fmt=function(d){return d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"})};
+var TYPES=["Registration certificate","Insurance","Survey certificate","Fishing licence","Pollution certificate","Crew licence","Passenger licence","Fire safety certificate"];
+var boats=[{id:1,name:"Sea Falcon",reg:"KA-MNG-0412",owner:"Ravi Naik",kind:"Fishing trawler",ic:"🎣",c:"s"},{id:2,name:"Blue Pearl",reg:"KA-MNG-0877",owner:"Ravi Naik",kind:"Fishing boat",ic:"🐟",c:"g"},{id:3,name:"Santa Maria",reg:"GA-PNJ-0231",owner:"Anita D’Souza",kind:"Cargo dhow",ic:"⚓",c:"l"},{id:4,name:"Wave Rider",reg:"KA-KWR-1120",owner:"Coastal Charters",kind:"Charter boat",ic:"⛵",c:"a"},{id:5,name:"Harbour Queen",reg:"KA-KWR-1203",owner:"Coastal Charters",kind:"Ferry",ic:"🚢",c:"r"}];
+var docs=[[1,"Registration certificate",416,1],[1,"Insurance",47,0],[1,"Survey certificate",-6,0],[2,"Fishing licence",44,0],[2,"Registration certificate",300,1],[3,"Crew licence",28,0],[3,"Insurance",75,1],[4,"Passenger licence",58,0],[4,"Insurance",12,0],[5,"Fire safety certificate",23,1],[5,"Survey certificate",81,0]].map(function(x,i){return{id:i+1,b:x[0],t:x[1],off:x[2],sub:!!x[3]}});
+var S={auth:false,v:"dash",f:"all",bf:"all",q:"",sort:"days",bid:null,pre:null,modal:null,set:{60:1,30:1,14:1,7:1,push:1,email:1,sms:0}};
+var days=function(d){return d.off};
+var B=function(id){return boats.filter(function(b){return b.id==id})[0]};
+var due=function(d){return !d.sub&&d.off<=60};
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.className="on";clearTimeout(toast.t);toast.t=setTimeout(function(){t.className=""},2200)}
+function dtxt(n){return n<0?(-n)+" days overdue":n===0?"Expires today":n+" days left"}
+function rowH(d,showB){var b=B(d.b),c=d.sub?"g":"r",cl=d.off<0&&!d.sub?"late":(due(d)?"soon":"");
+return '<div class="row"><div><b>'+d.t+'</b><br><small>'+b.name+' · '+b.reg+'</small></div><div class="x">'+fmt(D(d.off))+'</div><div class="x '+cl+'">'+dtxt(d.off)+'</div><div class="x"><span class="pill '+c+'"><i class="lt '+c+'"></i>'+(d.sub?"Submitted":"Not submitted")+'</span></div><div class="act x"><button class="btn sm '+(d.sub?"o":"")+'" data-a="tog" data-i="'+d.id+'">'+(d.sub?"Undo":"Mark submitted")+'</button></div></div>'}
+function head(){return '<div class="row h"><div>Document · Boat</div><div>Expiry date</div><div>Days to go</div><div>Status</div><div></div></div>'}
+function filtered(){var q=S.q.toLowerCase();var l=docs.filter(function(d){var b=B(d.b);
+if(S.bf!="all"&&d.b!=S.bf)return false;if(q&&(d.t+" "+b.name+" "+b.reg+" "+b.owner).toLowerCase().indexOf(q)<0)return false;
+if(S.f=="yes")return d.sub;if(S.f=="no")return !d.sub;if(S.f=="due")return due(d);if(S.f=="over")return !d.sub&&d.off<0;return true});
+return l.sort(function(a,b){return S.sort=="days"?a.off-b.off:S.sort=="boat"?a.b-b.b:Number(a.sub)-Number(b.sub)})}
+var V={
+dash:function(){var n=docs.length,s=docs.filter(function(d){return d.sub}).length,du=docs.filter(due).length,l=filtered();
+var chips=[["all","All"],["no","Not submitted"],["yes","Submitted"],["due","Due in 60 days"],["over","Overdue"]].map(function(c){return '<button class="chip '+(S.f==c[0]?"on":"")+'" data-a="f" data-v="'+c[0]+'">'+c[1]+'</button>'}).join("");
+var opts='<option value="all">All boats</option>'+boats.map(function(b){return '<option value="'+b.id+'"'+(S.bf==b.id?" selected":"")+'>'+b.name+'</option>'}).join("");
+return '<div class="top"><div><h1>Document dashboard</h1><p class="mu">As of '+fmt(T)+' · reminders go out 60 days before expiry</p></div><div style="display:flex;gap:10px"><button class="btn o" data-a="exp">Export CSV</button><button class="btn" data-a="go" data-v="add">+ Add document</button></div></div>'+
+'<div class="stats"><button class="st s1" data-a="f" data-v="all"><b>'+n+'</b><span>Documents tracked</span></button><button class="st s2" data-a="f" data-v="yes"><b>'+s+'</b><span>Submitted</span></button><button class="st s3" data-a="f" data-v="no"><b>'+(n-s)+'</b><span>Not submitted</span></button><button class="st s4" data-a="f" data-v="due"><b>'+du+'</b><span>Reminders due (60 days)</span></button></div>'+
+'<div class="bar">'+chips+'</div><div class="bar"><input id="q" type="search" placeholder="Search boat, owner or document" value="'+S.q.replace(/"/g,"")+'" aria-label="Search"><select id="bf" aria-label="Boat">'+opts+'</select><select id="so" aria-label="Sort"><option value="days"'+(S.sort=="days"?" selected":"")+'>Soonest first</option><option value="boat"'+(S.sort=="boat"?" selected":"")+'>By boat</option><option value="status"'+(S.sort=="status"?" selected":"")+'>Not submitted first</option></select></div>'+
+'<div class="card">'+(l.length?head()+l.map(function(d){return rowH(d)}).join(""):'<p class="empty">No documents match these filters.<br><button class="btn sm" data-a="clr" style="margin-top:10px">Clear filters</button></p>')+'</div>'},
+boats:function(){return '<div class="top"><div><h1>Boats</h1><p class="mu">'+boats.length+' registered vessels</p></div><button class="btn" data-a="modal" data-v="boat">+ Register boat</button></div><div class="grid">'+boats.map(function(b){var ds=docs.filter(function(d){return d.b==b.id}),s=ds.filter(function(d){return d.sub}).length,p=ds.length?Math.round(s/ds.length*100):0;
+return '<div class="card bc" data-a="boat" data-v="'+b.id+'" tabindex="0"><div class="ic" style="background:var(--'+b.c+');">'+b.ic+'</div><h2>'+b.name+'</h2><small>'+b.reg+' · '+b.kind+'</small><div class="prog"><i style="width:'+p+'%"></i></div><small>'+s+' of '+ds.length+' documents submitted · '+b.owner+'</small></div>'}).join("")+'</div>'},
+boat:function(){var b=B(S.bid),ds=docs.filter(function(d){return d.b==b.id}).sort(function(a,c){return a.off-c.off});
+return '<div class="top"><div><button class="btn o sm" data-a="go" data-v="boats">← Boats</button><h1 style="margin-top:12px">'+b.ic+' '+b.name+'</h1><p class="mu">'+b.reg+' · '+b.kind+' · Owner: '+b.owner+'</p></div><button class="btn" data-a="addfor" data-v="'+b.id+'">+ Add document</button></div><div class="card">'+(ds.length?head()+ds.map(function(d){return rowH(d)}).join(""):'<p class="empty">No documents yet.</p>')+'</div>'},
+add:function(){var pre=S.pre||boats[0].id;return '<div class="top"><div><h1>Add document</h1><p class="mu">Reminders are created automatically from the expiry date</p></div></div><div class="card form"><label>Boat<select id="fb">'+boats.map(function(b){return '<option value="'+b.id+'"'+(b.id==pre?" selected":"")+'>'+b.name+' · '+b.reg+'</option>'}).join("")+'</select></label><label>Document type<select id="ft">'+TYPES.map(function(t){return '<option>'+t+'</option>'}).join("")+'</select></label><label>Expiry date<input id="fd" type="date" value="'+D(60).toISOString().slice(0,10)+'"></label><div class="drop" data-a="file" tabindex="0" id="fl">📎 Tap to attach photo or PDF</div><input id="fi" type="file" hidden><div class="mu" id="pv"></div><button class="btn" data-a="save">Save document</button></div>'},
+rem:function(){var set=S.set,items=[];docs.forEach(function(d){if(d.sub)return;[60,30,14,7].forEach(function(k){if(!set[k])return;var at=d.off-k;if(at>-90)items.push({d:d,k:k,at:at})})});items.sort(function(a,b){return a.at-b.at});
+return '<div class="top"><div><h1>Reminders</h1><p class="mu">Push first, email backup, SMS as the last resort</p></div><button class="btn" data-a="modal" data-v="push">Send test push</button></div><div class="card">'+(items.length?items.slice(0,14).map(function(x){var sent=x.at<=0,b=B(x.d.b);return '<div class="tl"><div class="tg" style="background:var(--'+(sent?"g":"a")+');color:var(--'+(sent?"gt":"at")+')">'+x.k+'d</div><div style="flex:1"><b>'+x.d.t+'</b><br><small>'+b.name+' · expires '+fmt(D(x.d.off))+'</small></div><div style="text-align:right"><span class="pill '+(sent?"g":"r")+'" style="'+(sent?"":"background:var(--a);color:var(--at)")+'">'+(sent?"Sent":"Scheduled")+'</span><br><small>'+fmt(D(x.at))+'</small></div></div>'}).join(""):'<p class="empty">No pending reminders.</p>')+'</div>'},
+set:function(){var s=S.set;function sw(k,t,sub){return '<div class="sw"><div><b>'+t+'</b><br><small>'+sub+'</small></div><input class="tgl" type="checkbox" data-k="'+k+'"'+(s[k]?" checked":"")+' aria-label="'+t+'"></div>'}
+return '<div class="top"><div><h1>Settings</h1><p class="mu">Choose when and how owners are reminded</p></div><div style="display:flex;gap:10px"><button class="btn o" data-a="theme">Toggle dark mode</button><button class="btn" data-a="sv">Save changes</button></div></div><h2 style="margin-bottom:10px">Reminder schedule</h2><div class="card" style="margin-bottom:22px">'+sw(60,"60 days before","First gentle nudge")+sw(30,"30 days before","Push and email")+sw(14,"14 days before","Escalates to SMS")+sw(7,"7 days before","Final warning, repeated until renewed")+'</div><h2 style="margin-bottom:10px">Channels</h2><div class="card">'+sw("push","Push notification","Free, works from the installed app")+sw("email","Email backup","Includes a calendar invite")+sw("sms","SMS fallback","For low-connectivity areas")+'</div>'}
+};
+var NAV=[["dash","▦","Dashboard"],["boats","⛵","Boats"],["add","＋","Add"],["rem","🔔","Reminders"],["set","⚙","Settings"]];
+function nav(cls){var late=docs.filter(function(d){return !d.sub&&d.off<0}).length;return NAV.map(function(n){var on=S.v==n[0]||(S.v=="boat"&&n[0]=="boats");return '<button class="nav'+(on?" on":"")+'" data-a="go" data-v="'+n[0]+'"><span>'+n[1]+'</span>'+n[2]+(n[0]=="rem"&&late&&cls?'<b>'+late+'</b>':"")+'</button>'}).join("")}
+function modal(){if(S.modal=="boat")return '<div class="mask" data-a="mask"><div class="modal"><h2>Register boat</h2><label>Boat name<input id="mn"></label><label>Registration number<input id="mr"></label><label>Owner<input id="mo"></label><div style="display:flex;gap:10px;justify-content:flex-end"><button class="btn o" data-a="mask">Cancel</button><button class="btn" data-a="nb">Register</button></div></div></div>';
+if(S.modal=="push"){var u=docs.filter(function(d){return !d.sub}).sort(function(a,b){return a.off-b.off})[0];if(!u)return '<div class="mask" data-a="mask"><div class="modal"><h2>All caught up</h2><p class="mu">Every document is submitted.</p><button class="btn" data-a="mask">Close</button></div></div>';var b=B(u.b);
+return '<div class="mask" data-a="mask"><div class="push"><small style="color:#4f5f80">Lock screen preview</small><div style="font-size:44px;font-weight:300">9:41</div><div class="n"><div class="tg" style="background:#cfdafb;color:#2b3f7a;width:38px;height:38px">⚓</div><div><b>'+u.t+' '+(u.off<0?"has expired":"expires in "+u.off+" days")+'</b><br><small style="color:#4f5f80">'+b.name+' · '+fmt(D(u.off))+'. Submit it for renewal.</small><div style="display:flex;gap:8px;margin-top:10px"><button class="btn sm g" data-a="ren" data-i="'+u.id+'">I’ve renewed</button><button class="btn sm o" data-a="snz">Snooze</button></div></div></div></div></div>'}return ""}
+function render(){var r=document.getElementById("root");
+if(!S.auth){r.innerHTML='<div class="welcome"><div class="card wc"><div class="ic" style="background:var(--pri);margin:0 auto;width:64px;height:64px;font-size:30px">⚓</div><h1>Never miss a boat renewal</h1><p class="mu">Add documents once. Get a reminder 60 days before each one expires.</p><label style="text-align:left">Mobile number<input id="ph" value="+91 98450 11223"></label><button class="btn" data-a="login" style="padding:14px">Get started</button><small>Install: tap Share, then Add to Home Screen, and allow notifications.</small></div></div>';return}
+var late=docs.filter(function(d){return !d.sub&&d.off<0}).length;
+r.innerHTML='<div id="app"><aside class="side"><div class="logo"><i>⚓</i>Harbour Desk</div>'+nav(1)+'<div class="user"><div class="av">RN</div><div style="flex:1"><b>Ravi Naik</b><br><small>Admin</small></div><button class="btn o sm" data-a="out">Exit</button></div></aside><main>'+V[S.v]()+'</main><nav class="tabs">'+nav(0)+'</nav></div>'+modal()}
+function csv(){var l=["Boat,Registration,Owner,Document,Expiry,Days to go,Status"].concat(docs.map(function(d){var b=B(d.b);return [b.name,b.reg,b.owner,d.t,fmt(D(d.off)),d.off,d.sub?"Submitted":"Not submitted"].join(",")}));var a=document.createElement("a");a.href="data:text/csv;charset=utf-8,"+encodeURIComponent(l.join("\n"));a.download="boat-documents.csv";a.click()}
+document.addEventListener("click",function(e){var el=e.target.closest("[data-a]");if(!el)return;var a=el.dataset.a,v=el.dataset.v;
+if(a=="mask"&&e.target!==el)return;
+if(a=="login"){S.auth=true;toast("Welcome aboard")}
+else if(a=="out"){S.auth=false}
+else if(a=="go"){S.v=v;S.pre=null}
+else if(a=="f"){S.f=v;S.v="dash"}
+else if(a=="clr"){S.f="all";S.bf="all";S.q=""}
+else if(a=="tog"){var d=docs.filter(function(x){return x.id==el.dataset.i})[0];d.sub=!d.sub;toast(d.sub?"Marked as submitted":"Moved back to not submitted")}
+else if(a=="boat"){S.bid=+v;S.v="boat"}
+else if(a=="addfor"){S.pre=+v;S.v="add"}
+else if(a=="modal"){S.modal=v}
+else if(a=="mask"){S.modal=null}
+else if(a=="ren"){docs.filter(function(x){return x.id==el.dataset.i})[0].sub=true;S.modal=null;toast("Great, marked as renewed")}
+else if(a=="snz"){S.modal=null;toast("Snoozed for 3 days")}
+else if(a=="exp"){csv();toast("CSV exported");return}
+else if(a=="theme"){var h=document.documentElement,dk=h.dataset.theme=="dark"||(h.dataset.theme!="light"&&matchMedia("(prefers-color-scheme:dark)").matches);h.dataset.theme=dk?"light":"dark"}
+else if(a=="sv"){toast("Settings saved");return}
+else if(a=="file"){document.getElementById("fi").click();return}
+else if(a=="nb"){var n=document.getElementById("mn").value.trim(),r=document.getElementById("mr").value.trim();if(!n||!r){toast("Enter a name and registration number");return}
+var id=boats.length+1;boats.push({id:id,name:n,reg:r,owner:document.getElementById("mo").value.trim()||"New owner",kind:"Vessel",ic:"⛵",c:"s"});S.modal=null;toast(n+" registered")}
+else if(a=="save"){var dt=document.getElementById("fd").value;if(!dt){toast("Pick an expiry date");return}
+var off=Math.round((new Date(dt+"T00:00:00")-T)/864e5);docs.push({id:docs.length+1,b:+document.getElementById("fb").value,t:document.getElementById("ft").value,off:off,sub:false});S.v="dash";S.f="all";toast(off<=60?"Saved. Reminder sent now, as expiry is within 60 days":"Saved. First reminder on "+fmt(D(off-60)))}
+render()});
+document.addEventListener("input",function(e){var t=e.target;
+if(t.id=="q"){S.q=t.value;var p=t.selectionStart;render();var q=document.getElementById("q");q.focus();q.setSelectionRange(p,p)}
+else if(t.id=="bf"){S.bf=t.value;render()}else if(t.id=="so"){S.sort=t.value;render()}
+else if(t.dataset&&t.dataset.k){S.set[t.dataset.k]=t.checked?1:0}
+else if(t.id=="fi"){document.getElementById("fl").textContent="📎 "+(t.files[0]?t.files[0].name:"Tap to attach photo or PDF")}
+else if(t.id=="fd"){var o=Math.round((new Date(t.value+"T00:00:00")-T)/864e5);document.getElementById("pv").textContent=isNaN(o)?"":(o<=60?"Expires in "+o+" days: first reminder goes out immediately.":"First reminder on "+fmt(D(o-60))+".")}});
+render();
+</script></body></html>

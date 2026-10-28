@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Harbour Desk: Boat Document Dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#eef3f5;--surf:#fff;--ink:#0f2a36;--mute:#5d7480;--line:#d6e1e6;--green:#17995a;--greenbg:#e1f4ea;--red:#d3343a;--redbg:#fbe6e7;--amber:#a86a00;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1a22;--surf:#112530;--ink:#e6f0f4;--mute:#8aa3af;--line:#1f3a47;--green:#3ccf86;--greenbg:#12372a;--red:#ff6a70;--redbg:#3d1a1e;--amber:#e8b04a}}
+:root[data-theme="dark"]{--bg:#0b1a22;--surf:#112530;--ink:#e6f0f4;--mute:#8aa3af;--line:#1f3a47;--green:#3ccf86;--greenbg:#12372a;--red:#ff6a70;--redbg:#3d1a1e;--amber:#e8b04a}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 "Schibsted Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 18px 60px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+h1{font-size:28px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em}
+.sub{color:var(--mute);margin:4px 0 0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.stat b{display:block;font-size:30px;line-height:1.1;font-weight:700}
+.stat span{color:var(--mute);font-size:13px}
+.stat.g b{color:var(--green)}.stat.r b{color:var(--red)}.stat.a b{color:var(--amber)}
+.tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+input[type=search],select{font:inherit;color:var(--ink);background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+input[type=search]{flex:1;min-width:200px}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.owner{background:var(--surf);border:1px solid var(--line);border-radius:12px;margin-bottom:16px;overflow:hidden}
+.oh{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.oh strong{font-size:17px}.oh span{color:var(--mute);font-size:13px}
+.boat{padding:12px 18px 6px}
+.bn{font-weight:700;margin:6px 0 2px}.bn small{font-weight:400;color:var(--mute);margin-left:8px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th{text-align:left;font-weight:500;color:var(--mute);font-size:13px;padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+.light{display:inline-block;width:16px;height:16px;border-radius:50%;vertical-align:middle;margin-right:8px}
+.light.g{background:var(--green);box-shadow:0 0 0 4px var(--greenbg),0 0 12px var(--green)}
+.light.r{background:var(--red);box-shadow:0 0 0 4px var(--redbg),0 0 12px var(--red)}
+.lab.g{color:var(--green)}.lab.r{color:var(--red)}.lab{font-weight:700}
+.days{font-variant-numeric:tabular-nums;font-weight:500}
+.days.late{color:var(--red);font-weight:700}.days.soon{color:var(--amber);font-weight:700}
+.due{display:inline-block;margin-left:6px;font-size:12px;background:var(--redbg);color:var(--red);border-radius:99px;padding:1px 8px}
+button{font:inherit;font-size:13px;cursor:pointer;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 10px}
+button:hover{border-color:var(--ink)}
+.empty{text-align:center;color:var(--mute);padding:40px 0}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div><h1>Boat document dashboard</h1><p class="sub" id="today"></p></div>
+</header>
+<section class="stats" aria-label="Summary">
+<div class="stat"><b id="sTot">0</b><span>Documents tracked</span></div>
+<div class="stat g"><b id="sSub">0</b><span>Submitted</span></div>
+<div class="stat r"><b id="sNot">0</b><span>Not submitted</span></div>
+<div class="stat a"><b id="sDue">0</b><span>Expiring within 60 days, not submitted</span></div>
+</section>
+<div class="tools">
+<input type="search" id="q" placeholder="Search owner, boat or document" aria-label="Search">
+<select id="f" aria-label="Filter">
+<option value="all">All documents</option>
+<option value="no">Not submitted</option>
+<option value="yes">Submitted</option>
+<option value="due">Reminder due (within 60 days)</option>
+</select>
+</div>
+<main id="list"></main>
+</div>
+<script>
+var DAY=86400000, NOW=new Date(); NOW.setHours(0,0,0,0);
+function d(n){return new Date(NOW.getTime()+n*DAY)}
+var data=[
+{owner:"Ravi Naik",phone:"+91 98450 11223",boats:[
+ {name:"Sea Falcon",reg:"KA-MNG-0412",docs:[["Registration certificate",420,1],["Insurance",52,0],["Survey certificate",-6,0],["Pollution certificate",190,1]]},
+ {name:"Blue Pearl",reg:"KA-MNG-0877",docs:[["Registration certificate",300,1],["Fishing licence",44,0]]}]},
+{owner:"Anita D\u2019Souza",phone:"+91 99020 55871",boats:[
+ {name:"Santa Maria",reg:"GA-PNJ-0231",docs:[["Registration certificate",610,1],["Insurance",75,1],["Crew licence",28,0],["Survey certificate",140,1]]}]},
+{owner:"Coastal Charters Pvt Ltd",phone:"+91 80410 99000",boats:[
+ {name:"Wave Rider",reg:"KA-KWR-1120",docs:[["Registration certificate",260,1],["Insurance",12,0],["Passenger licence",58,0]]},
+ {name:"Sunset Cruiser",reg:"KA-KWR-1155",docs:[["Registration certificate",330,1],["Insurance",96,1],["Pollution certificate",-15,0]]},
+ {name:"Harbour Queen",reg:"KA-KWR-1203",docs:[["Survey certificate",81,0],["Fire safety certificate",23,1]]}]},
+{owner:"Mohan Pillai",phone:"+91 94470 33218",boats:[
+ {name:"Lakshmi",reg:"KL-KCH-0509",docs:[["Registration certificate",505,1],["Fishing licence",9,0],["Insurance",67,0]]}]}
+];
+var docs=[];
+data.forEach(function(o){o.boats.forEach(function(b){b.docs.forEach(function(x){docs.push({o:o,b:b,type:x[0],exp:d(x[1]),sub:!!x[2]})})})});
+function left(x){return Math.round((x.exp-NOW)/DAY)}
+function fmt(dt){return dt.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"})}
+function due(x){var l=left(x);return !x.sub&&l<=60}
+function render(){
+ var q=document.getElementById("q").value.toLowerCase(),f=document.getElementById("f").value;
+ var vis=docs.filter(function(x){
+  var t=(x.o.owner+" "+x.b.name+" "+x.b.reg+" "+x.type).toLowerCase();
+  if(q&&t.indexOf(q)<0)return false;
+  if(f==="no")return !x.sub; if(f==="yes")return x.sub; if(f==="due")return due(x);
+  return true});
+ document.getElementById("sTot").textContent=docs.length;
+ document.getElementById("sSub").textContent=docs.filter(function(x){return x.sub}).length;
+ document.getElementById("sNot").textContent=docs.filter(function(x){return !x.sub}).length;
+ document.getElementById("sDue").textContent=docs.filter(due).length;
+ var h="";
+ data.forEach(function(o){
+  var od=vis.filter(function(x){return x.o===o}); if(!od.length)return;
+  h+='<section class="owner"><div class="oh"><strong>'+o.owner+'</strong><span>'+o.phone+'</span></div>';
+  o.boats.forEach(function(b){
+   var bd=od.filter(function(x){return x.b===b}); if(!bd.length)return;
+   h+='<div class="boat"><div class="bn">'+b.name+'<small>'+b.reg+'</small></div><div class="scroll"><table><thead><tr><th>Document</th><th>Expiry date</th><th>Days to go</th><th>Status</th><th></th></tr></thead><tbody>';
+   bd.forEach(function(x){
+    var l=left(x),cls=l<0?"late":(l<=60&&!x.sub?"soon":""),
+    txt=l<0?(-l)+" days overdue":(l===0?"Expires today":l+" days"),
+    i=docs.indexOf(x);
+    h+='<tr><td>'+x.type+(due(x)&&l>=0?'<span class="due">Reminder due</span>':'')+'</td><td>'+fmt(x.exp)+'</td><td class="days '+cls+'">'+txt+'</td>'+
+    '<td><span class="light '+(x.sub?"g":"r")+'"></span><span class="lab '+(x.sub?"g":"r")+'">'+(x.sub?"Submitted":"Not submitted")+'</span></td>'+
+    '<td><button data-i="'+i+'">'+(x.sub?"Undo":"Mark submitted")+'</button></td></tr>';
+   });
+   h+='</tbody></table></div></div>';
+  });
+  h+='</section>';
+ });
+ document.getElementById("list").innerHTML=h||'<p class="empty">No documents match. Clear the search or change the filter.</p>';
+}
+document.getElementById("today").textContent="As of "+fmt(NOW)+". Reminders go out 60 days before each expiry.";
+document.getElementById("q").addEventListener("input",render);
+document.getElementById("f").addEventListener("change",render);
+document.getElementById("list").addEventListener("click",function(e){
+ var i=e.target.getAttribute&&e.target.getAttribute("data-i"); if(i===null||i===undefined)return;
+ docs[+i].sub=!docs[+i].sub; render();
+});
+render();
+</script>
+</body>
+</html>

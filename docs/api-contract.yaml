@@ -1,0 +1,470 @@
+openapi: 3.0.3
+info:
+  title: Harbour Desk API
+  description: REST API for Harbour Desk vessel document compliance and automated reminders
+  version: 1.0.0
+servers:
+  - url: http://localhost:4000/api
+    description: Local development backend
+paths:
+  /auth/otp/send:
+    post:
+      summary: Send OTP to phone number
+      operationId: sendOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone:
+                  type: string
+                  example: "+91 98450 11223"
+      responses:
+        '200':
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  devCode:
+                    type: string
+                    description: Only present in development mode
+
+  /auth/otp/verify:
+    post:
+      summary: Verify OTP and login
+      operationId: verifyOtp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone, code]
+              properties:
+                phone:
+                  type: string
+                  example: "+91 98450 11223"
+                code:
+                  type: string
+                  example: "123456"
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  token:
+                    type: string
+
+  /auth/me:
+    get:
+      summary: Get currently authenticated user
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+
+  /auth/logout:
+    post:
+      summary: Terminate session
+      operationId: logout
+      responses:
+        '200':
+          description: Logged out successfully
+
+  /boats:
+    get:
+      summary: List all registered boats
+      operationId: listBoats
+      responses:
+        '200':
+          description: List of boats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Boat'
+    post:
+      summary: Register a new vessel
+      operationId: createBoat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBoatInput'
+      responses:
+        '201':
+          description: Boat registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Boat'
+
+  /boats/{id}:
+    get:
+      summary: Get boat details with its documents
+      operationId: getBoatById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Boat details with documents
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BoatDetail'
+        '404':
+          description: Boat not found
+
+  /documents:
+    get:
+      summary: List documents with optional filters
+      operationId: listDocuments
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: boatId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [all, yes, no, due, over]
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [days, boat, status]
+      responses:
+        '200':
+          description: List of documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentItem'
+    post:
+      summary: Register a new boat document
+      operationId: createDocument
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [boatId, type, expiryDate]
+              properties:
+                boatId:
+                  type: integer
+                type:
+                  type: string
+                expiryDate:
+                  type: string
+                  format: date
+                file:
+                  type: string
+                  format: binary
+          application/json:
+            schema:
+              type: object
+              required: [boatId, type, expiryDate]
+              properties:
+                boatId:
+                  type: integer
+                type:
+                  type: string
+                expiryDate:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Document registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentItem'
+
+  /documents/{id}/status:
+    patch:
+      summary: Toggle document submitted status
+      operationId: updateDocumentStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [submitted]
+              properties:
+                submitted:
+                  type: boolean
+      responses:
+        '200':
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentItem'
+
+  /documents/export-csv:
+    get:
+      summary: Export documents to CSV
+      operationId: exportDocumentsCsv
+      responses:
+        '200':
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+
+  /reminders:
+    get:
+      summary: Get reminder timeline
+      operationId: listReminders
+      responses:
+        '200':
+          description: List of upcoming and sent reminders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReminderItem'
+
+  /reminders/test-push:
+    post:
+      summary: Send test push notification
+      operationId: sendTestPush
+      responses:
+        '200':
+          description: Test notification dispatched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sent:
+                    type: boolean
+                  message:
+                    type: string
+
+  /settings:
+    get:
+      summary: Get reminder schedule and notification channel preferences
+      operationId: getSettings
+      responses:
+        '200':
+          description: Settings data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+    put:
+      summary: Update settings
+      operationId: updateSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Settings'
+      responses:
+        '200':
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+        initials:
+          type: string
+
+    Boat:
+      type: object
+      required: [id, name, reg, owner, kind, icon, color]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        reg:
+          type: string
+        owner:
+          type: string
+        kind:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        documentCount:
+          type: integer
+        submittedCount:
+          type: integer
+
+    CreateBoatInput:
+      type: object
+      required: [name, reg, owner]
+      properties:
+        name:
+          type: string
+        reg:
+          type: string
+        owner:
+          type: string
+        kind:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+
+    BoatDetail:
+      allOf:
+        - $ref: '#/components/schemas/Boat'
+        - type: object
+          properties:
+            documents:
+              type: array
+              items:
+                $ref: '#/components/schemas/DocumentItem'
+
+    DocumentItem:
+      type: object
+      required: [id, boatId, type, expiryDate, daysLeft, submitted]
+      properties:
+        id:
+          type: integer
+        boatId:
+          type: integer
+        boat:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            reg:
+              type: string
+            owner:
+              type: string
+        type:
+          type: string
+        expiryDate:
+          type: string
+          format: date
+        daysLeft:
+          type: integer
+        submitted:
+          type: boolean
+        fileName:
+          type: string
+          nullable: true
+
+    ReminderItem:
+      type: object
+      required: [id, documentId, boatName, documentType, daysThreshold, expiryDate, triggerDate, sent]
+      properties:
+        id:
+          type: string
+        documentId:
+          type: integer
+        boatName:
+          type: string
+        documentType:
+          type: string
+        daysThreshold:
+          type: integer
+        expiryDate:
+          type: string
+        triggerDate:
+          type: string
+        sent:
+          type: boolean
+
+    Settings:
+      type: object
+      required: [schedule, channels]
+      properties:
+        schedule:
+          type: object
+          properties:
+            '60':
+              type: boolean
+            '30':
+              type: boolean
+            '14':
+              type: boolean
+            '7':
+              type: boolean
+        channels:
+          type: object
+          properties:
+            push:
+              type: boolean
+            email:
+              type: boolean
+            sms:
+              type: boolean
