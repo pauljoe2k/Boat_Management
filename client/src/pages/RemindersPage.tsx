@@ -18,7 +18,7 @@ export const RemindersPage: React.FC = () => {
   const { data: documents = [] } = useDocuments();
   const { mutate: updateDocStatus } = useUpdateDocumentStatus();
 
-  // Find the soonest unsubmitted document for the test push preview modal
+  // Find the most urgent unsubmitted document for the simulator preview
   const urgentUnsubmittedDoc = useMemo(() => {
     const unsubmitted = documents.filter((d: DocumentItem) => !d.submitted);
     unsubmitted.sort((a: DocumentItem, b: DocumentItem) => a.daysLeft - b.daysLeft);
@@ -30,7 +30,7 @@ export const RemindersPage: React.FC = () => {
       { id: docId, submitted: true },
       {
         onSuccess: () => {
-          showToast('Great, marked as renewed');
+          showToast('Document marked as renewed and reminders updated');
           setIsTestPushOpen(false);
         },
       }
@@ -38,7 +38,7 @@ export const RemindersPage: React.FC = () => {
   };
 
   const handleSnooze = () => {
-    showToast('Snoozed for 3 days');
+    showToast('Reminder preview snoozed for 3 days');
     setIsTestPushOpen(false);
   };
 
@@ -48,7 +48,7 @@ export const RemindersPage: React.FC = () => {
         title="Reminders"
         subtitle="Push first, email backup, SMS as the last resort"
         actions={
-          <Button onClick={() => setIsTestPushOpen(true)}>Send test push</Button>
+          <Button onClick={() => setIsTestPushOpen(true)}>Preview test push</Button>
         }
       />
 

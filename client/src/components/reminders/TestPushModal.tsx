@@ -24,7 +24,7 @@ export const TestPushModal: React.FC<TestPushModalProps> = ({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Lock screen notification preview"
+      aria-label="Lock screen notification simulator"
       style={{
         position: 'fixed',
         inset: 0,
@@ -51,9 +51,12 @@ export const TestPushModal: React.FC<TestPushModalProps> = ({
           textAlign: 'center',
         }}
       >
-        <small style={{ color: '#4f5f80', fontWeight: 600, display: 'block', marginBottom: '8px' }}>
-          Lock screen preview
-        </small>
+        <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.7)', borderRadius: '99px', padding: '3px 12px', marginBottom: '8px' }}>
+          <small style={{ color: '#2b3f7a', fontWeight: 700 }}>
+            Simulator: Owner Lock Screen Preview
+          </small>
+        </div>
+
         <div style={{ fontSize: '46px', fontWeight: 300, letterSpacing: '-0.02em', margin: '4px 0 16px' }}>
           9:41
         </div>
@@ -62,7 +65,7 @@ export const TestPushModal: React.FC<TestPushModalProps> = ({
           <div
             className="n"
             style={{
-              background: 'rgba(255, 255, 255, 0.92)',
+              background: 'rgba(255, 255, 255, 0.94)',
               borderRadius: '18px',
               padding: '14px',
               display: 'flex',
@@ -122,6 +125,12 @@ export const TestPushModal: React.FC<TestPushModalProps> = ({
             </Button>
           </div>
         )}
+
+        <div style={{ marginTop: '14px', textAlign: 'center' }}>
+          <small style={{ fontSize: '11px', color: '#556688', opacity: 0.9 }}>
+            Interactive template preview. Does not dispatch real device notifications.
+          </small>
+        </div>
       </div>
     </div>
   );

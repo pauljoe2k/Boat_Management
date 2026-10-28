@@ -16,7 +16,7 @@ export interface DocumentFiltersProps {
 
 const CHIPS: { value: DocumentFilterStatus; label: string }[] = [
   { value: 'all', label: 'All' },
-  { value: 'no', label: 'Not submitted' },
+  { value: 'no', label: 'Pending' },
   { value: 'yes', label: 'Submitted' },
   { value: 'due', label: 'Due in 60 days' },
   { value: 'over', label: 'Overdue' },
@@ -112,7 +112,7 @@ export const DocumentFilters: React.FC<DocumentFiltersProps> = ({
         >
           <option value="days">Soonest first</option>
           <option value="boat">By boat</option>
-          <option value="status">Not submitted first</option>
+          <option value="status">Pending first</option>
         </select>
       </div>
     </div>

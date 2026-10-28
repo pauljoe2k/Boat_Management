@@ -16,6 +16,7 @@ export const SettingsPage: React.FC = () => {
   const { mutateAsync: saveSettings, isPending: isSaving } = useUpdateSettings();
 
   const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
 
   useEffect(() => {
     if (serverSettings) {
@@ -49,11 +50,18 @@ export const SettingsPage: React.FC = () => {
     if (!settings) return;
     try {
       await saveSettings(settings);
-      showToast('Settings saved');
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      setLastSavedAt(timeStr);
+      showToast('Settings saved successfully');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to save settings';
       showToast(msg);
     }
+  };
+
+  const handleToggleTheme = () => {
+    toggleTheme();
+    showToast(theme === 'dark' ? 'Switched to Light mode' : 'Switched to Dark mode');
   };
 
   if (isLoading || !settings) {
@@ -71,7 +79,7 @@ export const SettingsPage: React.FC = () => {
         subtitle="Choose when and how owners are reminded"
         actions={
           <>
-            <Button variant="outline" onClick={toggleTheme}>
+            <Button variant="outline" onClick={handleToggleTheme}>
               {theme === 'dark' ? '☀️ Switch to light mode' : '🌙 Toggle dark mode'}
             </Button>
             <Button onClick={handleSave} isLoading={isSaving}>
@@ -80,6 +88,28 @@ export const SettingsPage: React.FC = () => {
           </>
         }
       />
+
+      {/* Saved State Visual Feedback */}
+      {lastSavedAt && (
+        <div
+          role="status"
+          style={{
+            background: 'var(--g)',
+            color: 'var(--gt)',
+            padding: '12px 18px',
+            borderRadius: '14px',
+            marginBottom: '18px',
+            fontWeight: 600,
+            fontSize: '13px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}
+        >
+          <span>✓ Settings saved successfully and applied to notification schedules.</span>
+          <small style={{ color: 'var(--gt)', opacity: 0.85 }}>Last saved at {lastSavedAt}</small>
+        </div>
+      )}
 
       {/* Reminder Schedule */}
       <h2 style={{ marginBottom: '10px' }}>Reminder schedule</h2>

@@ -30,16 +30,17 @@ export const DashboardPage: React.FC = () => {
   const { mutate: updateStatus } = useUpdateDocumentStatus();
   const { mutate: exportCsv, isPending: isExporting } = useExportCsv();
 
-  // Compute summary metrics across all documents
+  // Compute summary metrics across all tracked documents
   const allDocsQuery = useDocuments();
   const allDocs = allDocsQuery.data || [];
 
   const metrics = useMemo(() => {
     const total = allDocs.length;
     const submitted = allDocs.filter((d: DocumentItem) => d.submitted).length;
-    const notSubmitted = total - submitted;
-    const dueIn60Days = allDocs.filter((d: DocumentItem) => !d.submitted && d.daysLeft <= 60).length;
-    return { total, submitted, notSubmitted, dueIn60Days };
+    const pending = total - submitted;
+    const dueSoon = allDocs.filter((d: DocumentItem) => !d.submitted && d.daysLeft <= 60).length;
+    const overdue = allDocs.filter((d: DocumentItem) => !d.submitted && d.daysLeft < 0).length;
+    return { total, submitted, pending, dueSoon, overdue };
   }, [allDocs]);
 
   const handleToggleStatus = (id: number, currentSubmitted: boolean) => {
@@ -48,7 +49,7 @@ export const DashboardPage: React.FC = () => {
       { id, submitted: nextSubmitted },
       {
         onSuccess: () => {
-          showToast(nextSubmitted ? 'Marked as submitted' : 'Moved back to not submitted');
+          showToast(nextSubmitted ? 'Marked as submitted' : 'Moved back to pending');
         },
         onError: () => {
           showToast('Failed to update document status');
@@ -98,12 +99,12 @@ export const DashboardPage: React.FC = () => {
         }
       />
 
-      {/* 4 Stat Cards */}
+      {/* 4 Summary Metric Cards (Tracked, Submitted, Pending, Due Soon) */}
       <section className="stats" aria-label="Compliance Summary Statistics">
         <StatCard
           variant="s1"
           count={metrics.total}
-          label="Documents tracked"
+          label="Tracked documents"
           isActive={statusFilter === 'all'}
           onClick={() => setStatusFilter('all')}
         />
@@ -116,21 +117,21 @@ export const DashboardPage: React.FC = () => {
         />
         <StatCard
           variant="s3"
-          count={metrics.notSubmitted}
-          label="Not submitted"
+          count={metrics.pending}
+          label="Pending renewal"
           isActive={statusFilter === 'no'}
           onClick={() => setStatusFilter('no')}
         />
         <StatCard
           variant="s4"
-          count={metrics.dueIn60Days}
-          label="Reminders due (60 days)"
+          count={metrics.dueSoon}
+          label="Due soon (60 days)"
           isActive={statusFilter === 'due'}
           onClick={() => setStatusFilter('due')}
         />
       </section>
 
-      {/* Filters & Search */}
+      {/* Filters: Chips, Search, Boat Selector, Sort */}
       <DocumentFilters
         search={search}
         onSearchChange={setSearch}
@@ -159,7 +160,7 @@ export const DashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* Loading state indicator */}
+      {/* Loading & Data Table */}
       {isLoading ? (
         <div className="card empty">
           <p>Loading documents...</p>
