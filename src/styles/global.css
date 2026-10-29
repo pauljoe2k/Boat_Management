@@ -285,3 +285,17 @@ label {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Bottom nav (mobile only) — the prototype keeps .tabs out of the desktop
+   layout entirely and only shows it under 860px. Position, colour and spacing
+   stay inline on <nav class="tabs">; display lives here so the fixed bar can
+   never sit on top of sidebar controls at desktop widths. */
+.tabs {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .tabs {
+    display: flex;
+  }
+}

@@ -37,6 +37,20 @@ paths:
                   devCode:
                     type: string
                     description: Only present in development mode
+        '400':
+          description: Invalid phone number
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Too many OTP requests
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /auth/otp/verify:
     post:
@@ -68,6 +82,27 @@ paths:
                     $ref: '#/components/schemas/User'
                   token:
                     type: string
+        '400':
+          description: Invalid payload
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Invalid or expired code
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Too many verification attempts
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /auth/me:
     get:
@@ -84,19 +119,35 @@ paths:
                 $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /auth/logout:
     post:
       summary: Terminate session
       operationId: logout
+      security:
+        - BearerAuth: []
       responses:
         '200':
           description: Logged out successfully
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /boats:
     get:
       summary: List all registered boats
       operationId: listBoats
+      security:
+        - BearerAuth: []
       responses:
         '200':
           description: List of boats
@@ -106,9 +157,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Boat'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       summary: Register a new vessel
       operationId: createBoat
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -122,11 +182,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Boat'
+        '400':
+          description: Invalid payload
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicting resource
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /boats/{id}:
     get:
       summary: Get boat details with its documents
       operationId: getBoatById
+      security:
+        - BearerAuth: []
       parameters:
         - name: id
           in: path
@@ -140,13 +223,86 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BoatDetail'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '404':
           description: Boat not found
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      summary: Partially update a vessel
+      operationId: updateBoat
+      x-extension: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                reg:
+                  type: string
+                owner:
+                  type: string
+                kind:
+                  type: string
+                icon:
+                  type: string
+                color:
+                  type: string
+      responses:
+        '200':
+          description: Updated boat
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Boat'
+        '400':
+          description: Invalid payload
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Boat not found
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /documents:
     get:
       summary: List documents with optional filters
       operationId: listDocuments
+      security:
+        - BearerAuth: []
       parameters:
         - name: search
           in: query
@@ -179,9 +335,25 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/DocumentItem'
+        '400':
+          description: Invalid query parameter
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       summary: Register a new boat document
       operationId: createDocument
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -219,11 +391,186 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DocumentItem'
+        '400':
+          description: Invalid payload
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Boat not found
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Conflicting resource
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Attachment exceeds the upload limit
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '415':
+          description: Unsupported attachment type
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /documents/{id}:
+    get:
+      summary: Get a single document
+      operationId: getDocumentById
+      x-extension: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Document details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentItem'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Document not found
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    patch:
+      summary: Update a document's type and expiry date
+      operationId: updateDocument
+      x-extension: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                expiryDate:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Updated document
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentItem'
+        '400':
+          description: Invalid payload
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Document not found
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /documents/{id}/file:
+    get:
+      summary: Download a document's attachment
+      operationId: downloadDocumentFile
+      x-extension: true
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Attachment bytes
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Document or attachment not found
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /documents/{id}/status:
     patch:
       summary: Toggle document submitted status
       operationId: updateDocumentStatus
+      security:
+        - BearerAuth: []
       parameters:
         - name: id
           in: path
@@ -247,11 +594,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DocumentItem'
+        '400':
+          description: Invalid payload
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Document not found
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /documents/export-csv:
     get:
       summary: Export documents to CSV
       operationId: exportDocumentsCsv
+      security:
+        - BearerAuth: []
       responses:
         '200':
           description: CSV file download
@@ -259,11 +629,20 @@ paths:
             text/csv:
               schema:
                 type: string
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /reminders:
     get:
       summary: Get reminder timeline
       operationId: listReminders
+      security:
+        - BearerAuth: []
       responses:
         '200':
           description: List of upcoming and sent reminders
@@ -273,11 +652,20 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ReminderItem'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /reminders/test-push:
     post:
       summary: Send test push notification
       operationId: sendTestPush
+      security:
+        - BearerAuth: []
       responses:
         '200':
           description: Test notification dispatched
@@ -290,11 +678,20 @@ paths:
                     type: boolean
                   message:
                     type: string
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
   /settings:
     get:
       summary: Get reminder schedule and notification channel preferences
       operationId: getSettings
+      security:
+        - BearerAuth: []
       responses:
         '200':
           description: Settings data
@@ -302,9 +699,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Settings'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     put:
       summary: Update settings
       operationId: updateSettings
+      security:
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -318,6 +724,81 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Settings'
+        '400':
+          description: Invalid payload
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /dashboard/stats:
+    get:
+      summary: Compliance counters for the authenticated user's full document set
+      operationId: getDashboardStats
+      x-extension: true
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Counters derived from the unfiltered document set
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [total, submitted, notSubmitted, dueSoon, overdue]
+                properties:
+                  total:
+                    type: integer
+                  submitted:
+                    type: integer
+                  notSubmitted:
+                    type: integer
+                  dueSoon:
+                    type: integer
+                    description: Not submitted and expiring within 60 days (overdue included)
+                  overdue:
+                    type: integer
+                    description: Not submitted and already expired
+        '401':
+          description: Unauthorized
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /health:
+    get:
+      summary: Liveness and database reachability
+      operationId: getHealth
+      x-extension: true
+      responses:
+        '200':
+          description: Service and database are healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    example: ok
+        '503':
+          description: Database unreachable
+          x-extension: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 
 components:
   securitySchemes:
@@ -327,6 +808,40 @@ components:
       bearerFormat: JWT
 
   schemas:
+    Error:
+      type: object
+      x-extension: true
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                [
+                  VALIDATION_ERROR,
+                  UNAUTHORIZED,
+                  NOT_FOUND,
+                  CONFLICT,
+                  PAYLOAD_TOO_LARGE,
+                  UNSUPPORTED_MEDIA_TYPE,
+                  RATE_LIMITED,
+                  INTERNAL_ERROR,
+                ]
+            message:
+              type: string
+            details:
+              type: array
+              items:
+                type: object
+                properties:
+                  path:
+                    type: string
+                  message:
+                    type: string
+
     User:
       type: object
       properties:
@@ -359,6 +874,14 @@ components:
           type: string
         color:
           type: string
+        ic:
+          type: string
+          x-extension: true
+          description: Alias of `icon`, as used by the prototype and the shipped frontend
+        c:
+          type: string
+          x-extension: true
+          description: Alias of `color`, as used by the prototype and the shipped frontend
         documentCount:
           type: integer
         submittedCount:
@@ -378,8 +901,16 @@ components:
           type: string
         icon:
           type: string
+        ic:
+          type: string
+          x-extension: true
+          description: Accepted alias of `icon`
         color:
           type: string
+        c:
+          type: string
+          x-extension: true
+          description: Accepted alias of `color`
 
     BoatDetail:
       allOf:
@@ -443,6 +974,11 @@ components:
           type: string
         sent:
           type: boolean
+        deliveryStatus:
+          type: string
+          enum: [sent, scheduled]
+          x-extension: true
+          description: Dispatch state reported by the reminder worker
 
     Settings:
       type: object

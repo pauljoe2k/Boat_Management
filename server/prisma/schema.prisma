@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  name      String
+  role      String   @default("Admin")
+  initials  String
+  createdAt DateTime @default(now())
+
+  boats     Boat[]
+  documents Document[]
+  reminders Reminder[]
+  settings  Settings?
+
+  @@map("users")
+}
+
+model Boat {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  name      String
+  reg       String
+  owner     String
+  kind      String   @default("Vessel")
+  icon      String   @default("⛵")
+  color     String   @default("s")
+  createdAt DateTime @default(now())
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@index([userId])
+  @@map("boats")
+}
+
+model Document {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  boatId     Int
+  type       String
+  expiryDate DateTime @db.Date
+  submitted  Boolean  @default(false)
+  fileName   String?
+  fileType   String?
+  fileData   Bytes?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  boat     Boat       @relation(fields: [boatId], references: [id], onDelete: Cascade)
+  reminders Reminder[]
+
+  @@index([userId])
+  @@index([boatId])
+  @@map("documents")
+}
+
+model Reminder {
+  id           Int       @id @default(autoincrement())
+  userId       String
+  documentId   Int
+  daysThreshold Int
+  triggerDate  DateTime  @db.Date
+  sent         Boolean   @default(false)
+  sentAt       DateTime?
+  createdAt    DateTime  @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, daysThreshold])
+  @@index([userId, sent])
+  @@map("reminders")
+}
+
+model Settings {
+  userId       String  @id
+  schedule60   Boolean @default(true)
+  schedule30   Boolean @default(true)
+  schedule14   Boolean @default(true)
+  schedule7    Boolean @default(true)
+  channelPush  Boolean @default(true)
+  channelEmail Boolean @default(true)
+  channelSms   Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("settings")
+}
