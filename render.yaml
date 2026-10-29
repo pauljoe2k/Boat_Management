@@ -38,11 +38,8 @@ services:
         value: '+919845011223'
 
   # Frontend (Vite + React)
-  - type: web
+  - type: static
     name: harbour-desk-web
-    runtime: static
-    plan: free
-    region: oregon
     rootDir: client
     buildCommand: npm install && npm run build
     staticPublishPath: dist
