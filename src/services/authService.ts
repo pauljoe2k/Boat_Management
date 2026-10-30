@@ -1,4 +1,4 @@
-import { apiRequest, setSessionToken, USE_MOCK_API } from './apiClient';
+import { apiRequest, setSessionToken, getSessionToken, USE_MOCK_API } from './apiClient';
 import { mockAdapter } from './mock/mockAdapter';
 import type { SendOtpResponse, VerifyOtpResponse, User } from '../types/auth';
 
@@ -41,22 +41,25 @@ export const authService = {
     if (USE_MOCK_API) {
       return mockAdapter.getCurrentUser();
     }
+    const token = getSessionToken();
+    if (!token) {
+      return null;
+    }
     try {
       return await apiRequest<User>('/auth/me');
     } catch {
-      return mockAdapter.getCurrentUser();
+      setSessionToken(null);
+      return null;
     }
   },
 
   async logout(): Promise<void> {
     setSessionToken(null);
-    if (USE_MOCK_API) {
-      return mockAdapter.logout();
-    }
+    await mockAdapter.logout();
     try {
       await apiRequest<void>('/auth/logout', { method: 'POST' });
     } catch {
-      await mockAdapter.logout();
+      // ignore
     }
   },
 };

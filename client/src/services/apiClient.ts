@@ -10,10 +10,27 @@ export class ApiError extends Error {
   }
 }
 
-let sessionToken: string | null = null;
+const TOKEN_STORAGE_KEY = 'harbour_desk_jwt_token';
+
+let sessionToken: string | null = ((): string | null => {
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+})();
 
 export const setSessionToken = (token: string | null) => {
   sessionToken = token;
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    } else {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+    }
+  } catch {
+    // ignore
+  }
 };
 
 export const getSessionToken = () => sessionToken;

@@ -122,15 +122,34 @@ export const OtpPage: React.FC = () => {
             style={{
               background: 'var(--s)',
               color: 'var(--st)',
-              padding: '8px 12px',
-              borderRadius: '10px',
-              fontSize: '12px',
+              padding: '10px 14px',
+              borderRadius: '12px',
+              fontSize: '13px',
               cursor: 'pointer',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              border: '1px solid var(--st)',
+              boxShadow: '0 2px 8px rgba(29, 95, 128, 0.1)',
             }}
             onClick={handleUseDevCode}
-            title="Click to auto-fill development code"
+            title="Click to auto-fill developer access code"
           >
-            Development code: <b>{devCode}</b> (click to fill)
+            <span>Developer access code:</span>
+            <b
+              style={{
+                letterSpacing: '2px',
+                background: 'var(--sf)',
+                padding: '3px 8px',
+                borderRadius: '6px',
+                fontSize: '14px',
+              }}
+            >
+              {devCode}
+            </b>
+            <small style={{ fontSize: '11px', opacity: 0.85 }}>(click to fill)</small>
           </div>
         )}
 

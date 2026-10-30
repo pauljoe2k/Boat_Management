@@ -9,7 +9,7 @@ const STORAGE_KEYS = {
   BOATS: 'harbour_mock_boats_v1',
   DOCS: 'harbour_mock_docs_v1',
   SETTINGS: 'harbour_mock_settings_v1',
-  USER: 'harbour_mock_user_v1',
+  USER: 'harbour_mock_user_v2',
 };
 
 class MockAdapter {
@@ -22,7 +22,7 @@ class MockAdapter {
     this.boats = this.loadFromStorage(STORAGE_KEYS.BOATS, INITIAL_BOATS);
     this.documents = this.loadFromStorage(STORAGE_KEYS.DOCS, INITIAL_DOCUMENTS);
     this.settings = this.loadFromStorage(STORAGE_KEYS.SETTINGS, INITIAL_SETTINGS);
-    this.currentUser = this.loadFromStorage(STORAGE_KEYS.USER, INITIAL_USER);
+    this.currentUser = this.loadFromStorage(STORAGE_KEYS.USER, null);
   }
 
   private loadFromStorage<T>(key: string, fallback: T): T {
