@@ -30,16 +30,14 @@ export const BottomNav: React.FC = () => {
         bottom: 0,
         left: 0,
         right: 0,
-        width: '100%',
-        background: 'var(--sf)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderTop: '1px solid var(--ln)',
-        boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.06)',
-        padding: '6px 8px calc(6px + env(safe-area-inset-bottom, 0px))',
+        height: '46px',
+        background: 'var(--nav-bg)',
+        backdropFilter: 'blur(20px) saturate(160%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+        borderTop: '1px solid var(--nav-border)',
+        boxShadow: '0 -2px 12px rgba(0, 0, 0, 0.05)',
+        padding: '2px 8px calc(2px + env(safe-area-inset-bottom, 0px))',
         zIndex: 50,
-        display: 'flex',
-        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         boxSizing: 'border-box',
@@ -52,9 +50,10 @@ export const BottomNav: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'space-around',
           width: '100%',
-          maxWidth: '560px',
+          maxWidth: '520px',
           margin: '0 auto',
-          gap: '6px',
+          gap: '4px',
+          height: '100%',
         }}
       >
         {NAV_ITEMS.map((item) => (
@@ -65,14 +64,15 @@ export const BottomNav: React.FC = () => {
             style={({ isActive }) => ({
               flex: '1 1 0px',
               minWidth: 0,
-              maxWidth: '96px',
+              maxWidth: '88px',
+              height: '38px',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '3px',
-              padding: '6px 4px',
-              borderRadius: '12px',
+              gap: '1px',
+              padding: '2px 4px',
+              borderRadius: '10px',
               color: isActive ? 'var(--pt)' : 'var(--mu)',
               background: isActive ? 'var(--pri)' : 'transparent',
               fontWeight: isActive ? 700 : 600,
@@ -81,25 +81,25 @@ export const BottomNav: React.FC = () => {
               transition:
                 'background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast)',
               transform: isActive ? 'translateY(-1px)' : 'none',
-              boxShadow: isActive ? '0 2px 8px rgba(43, 63, 122, 0.12)' : 'none',
+              boxShadow: isActive ? '0 1px 6px rgba(43, 63, 122, 0.14)' : 'none',
             })}
           >
             <span
               style={{
-                fontSize: '18px',
+                fontSize: '15px',
                 lineHeight: 1,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '22px',
+                height: '16px',
               }}
             >
               {item.icon}
             </span>
             <span
               style={{
-                fontSize: '11px',
-                lineHeight: 1.2,
+                fontSize: '10px',
+                lineHeight: 1.1,
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -112,17 +112,17 @@ export const BottomNav: React.FC = () => {
               <span
                 style={{
                   position: 'absolute',
-                  top: '3px',
-                  right: 'calc(50% - 16px)',
+                  top: '1px',
+                  right: 'calc(50% - 14px)',
                   background: 'var(--r)',
                   color: 'var(--rt)',
                   borderRadius: '99px',
-                  fontSize: '10px',
+                  fontSize: '9px',
                   fontWeight: 700,
-                  minWidth: '16px',
-                  height: '16px',
-                  padding: '0 4px',
-                  lineHeight: '16px',
+                  minWidth: '14px',
+                  height: '14px',
+                  padding: '0 3px',
+                  lineHeight: '14px',
                   textAlign: 'center',
                   boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
                 }}

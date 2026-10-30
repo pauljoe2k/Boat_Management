@@ -286,9 +286,13 @@ label {
   }
 }
 
-/* Bottom nav (mobile only) — hidden on desktop, visible and horizontal on mobile */
+/* Bottom nav & Mobile Top Bar */
 .tabs {
-  display: none;
+  display: none !important;
+}
+
+.mobile-top-bar {
+  display: none !important;
 }
 
 @media (max-width: 860px) {
@@ -298,7 +302,11 @@ label {
   .tabs {
     display: flex !important;
   }
+  .mobile-top-bar {
+    display: flex !important;
+  }
   main {
-    padding: 20px 16px 88px !important;
+    padding: 16px 16px 64px !important;
   }
 }
+

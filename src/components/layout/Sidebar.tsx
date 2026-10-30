@@ -39,6 +39,7 @@ export const Sidebar: React.FC = () => {
         top: 0,
         height: '100vh',
         flexShrink: 0,
+        zIndex: 100,
       }}
     >
       <div

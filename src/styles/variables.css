@@ -5,6 +5,8 @@
   --ink: #26344b;
   --mu: #76849b;
   --ln: #e4eaf4;
+  --nav-bg: rgba(255, 255, 255, 0.72);
+  --nav-border: rgba(228, 234, 244, 0.75);
 
   /* Primary brand (Periwinkle / Harbour Blue) */
   --pri: #cfdafb;
@@ -58,6 +60,8 @@
     --ink: #e8eef8;
     --mu: #93a2ba;
     --ln: #25324a;
+    --nav-bg: rgba(22, 32, 47, 0.72);
+    --nav-border: rgba(37, 50, 74, 0.75);
     --pri: #2c3d6b;
     --pt: #d6e0ff;
     --g: #173a2b;
@@ -80,6 +84,8 @@
   --ink: #e8eef8;
   --mu: #93a2ba;
   --ln: #25324a;
+  --nav-bg: rgba(22, 32, 47, 0.72);
+  --nav-border: rgba(37, 50, 74, 0.75);
   --pri: #2c3d6b;
   --pt: #d6e0ff;
   --g: #173a2b;
@@ -101,6 +107,8 @@
   --ink: #26344b;
   --mu: #76849b;
   --ln: #e4eaf4;
+  --nav-bg: rgba(255, 255, 255, 0.72);
+  --nav-border: rgba(228, 234, 244, 0.75);
   --pri: #cfdafb;
   --pt: #2b3f7a;
   --g: #d8f2e4;
