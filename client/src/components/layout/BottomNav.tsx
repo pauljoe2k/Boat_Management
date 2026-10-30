@@ -30,57 +30,109 @@ export const BottomNav: React.FC = () => {
         bottom: 0,
         left: 0,
         right: 0,
+        width: '100%',
         background: 'var(--sf)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         borderTop: '1px solid var(--ln)',
-        padding: '6px 6px calc(6px + env(safe-area-inset-bottom, 0px))',
-        zIndex: 40,
-        justifyContent: 'space-around',
+        boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.06)',
+        padding: '6px 8px calc(6px + env(safe-area-inset-bottom, 0px))',
+        zIndex: 50,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxSizing: 'border-box',
       }}
     >
-      {NAV_ITEMS.map((item) => (
-        <NavLink
-          key={item.key}
-          to={item.to}
-          end={item.to === '/'}
-          className={({ isActive }) => `nav ${isActive ? 'on' : ''}`.trim()}
-          style={({ isActive }) => ({
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '2px',
-            padding: '6px 10px',
-            borderRadius: '10px',
-            fontSize: '11px',
-            fontWeight: 600,
-            color: isActive ? 'var(--pt)' : 'var(--mu)',
-            background: isActive ? 'var(--pri)' : 'transparent',
-            textDecoration: 'none',
-            position: 'relative',
-          })}
-        >
-          <span style={{ fontSize: '18px', lineHeight: 1 }}>{item.icon}</span>
-          <span>{item.label}</span>
-          {item.key === 'rem' && overdueCount > 0 && (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          width: '100%',
+          maxWidth: '560px',
+          margin: '0 auto',
+          gap: '6px',
+        }}
+      >
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.key}
+            to={item.to}
+            end={item.to === '/'}
+            style={({ isActive }) => ({
+              flex: '1 1 0px',
+              minWidth: 0,
+              maxWidth: '96px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '3px',
+              padding: '6px 4px',
+              borderRadius: '12px',
+              color: isActive ? 'var(--pt)' : 'var(--mu)',
+              background: isActive ? 'var(--pri)' : 'transparent',
+              fontWeight: isActive ? 700 : 600,
+              textDecoration: 'none',
+              position: 'relative',
+              transition:
+                'background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast)',
+              transform: isActive ? 'translateY(-1px)' : 'none',
+              boxShadow: isActive ? '0 2px 8px rgba(43, 63, 122, 0.12)' : 'none',
+            })}
+          >
             <span
               style={{
-                position: 'absolute',
-                top: '2px',
-                right: '4px',
-                background: 'var(--r)',
-                color: 'var(--rt)',
-                borderRadius: '99px',
-                fontSize: '10px',
-                fontWeight: 700,
-                padding: '0 5px',
-                lineHeight: '14px',
+                fontSize: '18px',
+                lineHeight: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '22px',
               }}
             >
-              {overdueCount}
+              {item.icon}
             </span>
-          )}
-        </NavLink>
-      ))}
+            <span
+              style={{
+                fontSize: '11px',
+                lineHeight: 1.2,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                maxWidth: '100%',
+              }}
+            >
+              {item.label}
+            </span>
+            {item.key === 'rem' && overdueCount > 0 && (
+              <span
+                style={{
+                  position: 'absolute',
+                  top: '3px',
+                  right: 'calc(50% - 16px)',
+                  background: 'var(--r)',
+                  color: 'var(--rt)',
+                  borderRadius: '99px',
+                  fontSize: '10px',
+                  fontWeight: 700,
+                  minWidth: '16px',
+                  height: '16px',
+                  padding: '0 4px',
+                  lineHeight: '16px',
+                  textAlign: 'center',
+                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)',
+                }}
+              >
+                {overdueCount}
+              </span>
+            )}
+          </NavLink>
+        ))}
+      </div>
     </nav>
   );
 };

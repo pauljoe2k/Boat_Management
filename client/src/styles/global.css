@@ -285,3 +285,21 @@ label {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Bottom nav (mobile only) — hidden on desktop, visible and horizontal on mobile */
+.tabs {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .side {
+    display: none !important;
+  }
+  .tabs {
+    display: flex !important;
+  }
+  main {
+    padding: 20px 16px 88px !important;
+  }
+}
+
